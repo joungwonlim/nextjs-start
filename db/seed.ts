@@ -3,11 +3,13 @@ import * as schema from "@/db/schema";
 import { getTableName, sql, Table } from "drizzle-orm";
 import * as seeds from "./seeds";
 
-async function resetTable(table: Table) {
-  return db.execute(
+const resetTable = async (table: Table) => {
+  const result = await db.execute(
     sql.raw(`TRUNCATE TABLE "${getTableName(table)}" RESTART IDENTITY CASCADE`)
   );
-}
+  console.log(`TRUNCATE TABLE "${getTableName(table)}" completed`);
+  return result;
+};
 
 const seed = async () => {
   for (const table of [schema.user]) {
@@ -16,8 +18,8 @@ const seed = async () => {
     //   schema.menuItem,
     //   schema.category,
     // ]
+
     await resetTable(table).then(async () => {
-      console.log(`TRUNCATE TABLE "${getTableName(table)}" completed`);
       await seeds[getTableName(table)]();
     });
   }
